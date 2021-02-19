@@ -9,7 +9,10 @@ module.exports = {
     ROUTES:{
       GET_IEX_STATUS:"/status"
     },
-
+    USER_DATABASE:{
+      DEFAULT_USER_DB_PORT:3030,
+      NO_CLIENT_CONNECTION:"User database client has no connection"
+    },
     IEX:{
       STATUS_ROUTE:"status",
       NOT_AVAILABLE_MESSAGE:"IEX Not active",

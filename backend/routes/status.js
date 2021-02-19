@@ -1,19 +1,4 @@
-const fetch = require('node-fetch');
 const constants = require("../constants");
-
-let getStatus = (res) => {
-  return fetch(checkURL)
-    .then((fetchResponse) => {
-      return fetchResponse.json();
-    })
-    .catch(error => {
-      console.log(error);
-    })
-    .then(body => {
-      console.log("Iex status check requested");
-      return body;
-    });
-}
 module.exports =
   (req, res, api) => {
     let checkURL = constants.IEX.STATUS_ROUTE;
@@ -27,5 +12,4 @@ module.exports =
         console.log("Iex json returned:" + body);
         res.send(body);
       });
-
   };

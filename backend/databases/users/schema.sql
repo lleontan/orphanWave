@@ -5,13 +5,10 @@ create table if not exists users (
     id SERIAL primary key,
     email varchar(320) not null UNIQUE,
     passhash varchar(255) not null,
-    user_name varchar(255) not null UNIQUE,
-    first_name varchar(128) not null,
-    last_name varchar(128) not null,
-    photo_url varchar(128) not null
+    user_name varchar(255) not null UNIQUE
 );
 create table if not exists sessions (
     id SERIAL primary key,
     sign_in_time timestamp not null,
-    ip varchar(15) not null UNIQUE
+    ip varchar(15) not null
 );

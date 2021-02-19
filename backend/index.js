@@ -3,10 +3,12 @@ const express = require('express');
 const api=require("./helpers/apiFetch")
 const IexApi=api.IexApi();
 const app = express();
-const router = express.Router();
 const status=require('./routes/status');
 const constants= require("./constants");
+const loginRouter= require("./routes/login");
+const registerRouter= require("./routes/register");
 
+const tokenCheck=require("./helpers/tokenCheck");
 
 const UnemploymentRateString=constants.BASE_IEX_URL+constants.IEX.UNEMPLOYMENT_RATE_ROUTE;
 const GENERIC_ERROR_MESSAGE="Error Occured";
@@ -31,13 +33,20 @@ app.get('/test/unemployment', async (req, res) => {
 app.get('/',  async (req, res) => {
   res.send("404 page not found");
 });
-router.use(function (req, res, next) {
-  console.log('Time:', Date.now())
-  next()
+
+app.use('/login',loginRouter);
+app.use('/register',registerRouter);
+app.get('/user', tokenCheck, async (req, res) => {
+  console.log("User get request initiated");
+  res.send("Attempting get on user");
 });
+app.get('/data', tokenCheck, async (req, res) => {
+  console.log("Api data request initiated");
+  res.send("Attempting get on data");
+});
+
 
 app.listen(constants.LOCAL_PORT,constants.HOST_NAME, () => {
   console.log('Orphan Wave listening on port '+constants.LOCAL_PORT);
   console.log("http://"+constants.HOST_NAME+':'+constants.LOCAL_PORT+'/');
 });
-app.use('/', router);
