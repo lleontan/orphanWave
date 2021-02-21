@@ -1,0 +1,81 @@
+body{
+  color: white;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+}
+
+.visible{
+  visibility: visible;
+}
+.hidden{
+  visibility: hidden;
+}
+.div > *{
+  margin: 1rem;
+}
+.flexRow{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.flexRow > *{
+  margin-right: 1rem;
+}
+.baseBackground{
+    color: white;
+    background-color: black;
+}
+.alternateBackground{
+  background-color: #222222;
+}
+.header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 1rem;
+  padding-right: 2rem;
+}
+.header img{
+  width: 4rem;
+  height:4rem;
+}
+.headerLogInButtons{
+  font-size: 1rem;
+}
+.main{
+  min-height: 60vh;
+
+}
+.smallPadding{
+  padding: 1rem;
+}
+.mediumPadding{
+  padding:2rem;
+}
+.logInSideBar{
+  position: absolute;
+  right:0px;
+  padding: 1rem;
+  height: 100%;
+}
+.logInSideBar > div{
+  padding-top: 1rem;
+}
+.inputBlock{
+  margin: 1rem;
+}
+@media screen and (min-width: 600px) {
+
+}
+
+@media screen and (min-width: 1200px) {
+  .main{
+    min-height: 67vh;
+  }
+}
+@media screen and (min-width: 1800px) {
+  .main{
+    min-height: 74vh;
+  }
+}
