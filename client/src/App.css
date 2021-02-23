@@ -4,7 +4,14 @@ body{
   display: flex;
   flex-direction: column;
 }
-
+.spaceBetween{
+  display: flex;
+  justify-content: space-between;
+}
+.closeButton{
+  float: right;
+  margin-top: 0px;
+}
 .visible{
   visibility: visible;
 }
@@ -12,15 +19,23 @@ body{
   visibility: hidden;
 }
 .div > *{
-  margin: 1rem;
+  margin: .5rem;
 }
 .flexRow{
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-.flexRow > *{
-  margin-right: 1rem;
+.flexCol{
+      display: flex;
+      flex-direction: column;
+      align-items: left;
+}
+.flexCol > *{
+  margin-bottom: 0.1rem;
+}
+.flexRow > * {
+  margin-right: 0.5rem;
 }
 .baseBackground{
     color: white;
@@ -42,6 +57,7 @@ body{
 }
 .headerLogInButtons{
   font-size: 1rem;
+  margin-left: .05rem;
 }
 .main{
   min-height: 60vh;
@@ -56,14 +72,18 @@ body{
 .logInSideBar{
   position: absolute;
   right:0px;
-  padding: 1rem;
+  padding-right: 3rem;
+
+  padding-left: 2rem;
+  padding-top: .5rem;
   height: 100%;
 }
 .logInSideBar > div{
-  padding-top: 1rem;
+  padding-top: .1rem;
 }
 .inputBlock{
-  margin: 1rem;
+  margin: .2rem;
+  margin-bottom: .5rem;
 }
 @media screen and (min-width: 600px) {
 

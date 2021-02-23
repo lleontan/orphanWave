@@ -1,44 +1,73 @@
-import React, {Component} from 'react';
+import React, {Component,useRef} from 'react';
 import LogInButton from './LogInButton';
 import InputBlock from './InputBlock';
 import CloseButton from './CloseButton';
-class LogInSideBar extends Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  renderState(){
-    if(this.props.logInSideBarStateLogIn){
-        return(<form>
-          <h2>Log In</h2>
-          <InputBlock name="Email" onChange={this.handleChange}/>
-          <InputBlock name="Password" onChange={this.handleChange}/>
-          <input type="submit" value="Submit"/>
-        </form>);
+
+
+const RenderSidebar=(props)=>{
+  let formRef = useRef(null);
+  let compileFormLogin = () => {
+    let form = formRef.current;
+    let confirmPasswordInput = form['confirmPassword'];
+    let confirmPassword="";
+    if(confirmPasswordInput){
+      confirmPassword=confirmPasswordInput.value;
     }
-    return(<form>
-      <h2>Register</h2>
-      <InputBlock name="Email" onChange={this.handleChange}/>
-      <InputBlock name="Password" onChange={this.handleChange}/>
-      <InputBlock name="Confirm Password" onChange={this.handleChange}/>
-      <InputBlock name="Username" onChange={this.handleChange}/>
-      <input type="submit" value="Submit"/>
+    let payload = {
+      email: form['email'].value,
+      password: form['password'].value
+    };
+    return payload;
+  }
+  let compileFormRegistration = () => {
+    let form = formRef.current;
+    let payload = {
+      email: form['email'].value,
+      password: form['password'].value,
+      confirmPassword: form['confirmPassword'].value,
+      username: form['username'].value
+    };
+    return payload;
+  }
+  if (props.logInSideBarStateLogIn) {
+    return (<form ref={formRef}>
+      <div className="flexRow spaceBetween">
+        <h2>Log In</h2>
+        <CloseButton clickFunction={props.closeSidebarFunction}/>
+      </div>
+      <InputBlock name="email"/>
+      <InputBlock name="password"/>
+      <input type="submit" value="Submit" onClick={(event) => {
+          event.preventDefault();
+          props.loginSubmit(compileFormLogin())
+        }}/>
     </form>);
   }
-  render() {
-    return (<div className={ `${"logInSideBar"} ${"baseBackground"} ${this.props.opened? "visible":"hidden"}` }>
-      <CloseButton clickFunction={this.props.closeSidebarFunction}/>
-      {this.renderState()}
-    </div>);
-  }
-  handleChange(event) {
-    this.setState({value: event.target.value});
-  }
-  handleSubmit(event) {
-    console.log('A name was submitted: ' + this.state.value);
-    event.preventDefault();
-  }
+  return (<form ref={formRef}>
+    <div className="flexRow spaceBetween">
+      <h2>Register</h2>
+      <CloseButton clickFunction={props.closeSidebarFunction}/>
+    </div>
+    <InputBlock name="email"/>
+    <InputBlock name="password"/>
+    <InputBlock name="confirmPassword"/>
+    <InputBlock name="username" type="text"/>
+    <input type="submit" value="Submit" onClick={(event) => {
+        event.preventDefault();
+        props.registrationSubmit(compileFormRegistration())
+      }}/>
+  </form>);
 }
 
+let handleSubmit=(event)=>{
+  event.preventDefault();
+}
+
+let LogInSideBar=(props)=>{
+  return(<div className={`${ "logInSideBar"} ${ "baseBackground"} ${props.opened
+          ? "visible"
+          : "hidden"}`}>
+        {RenderSidebar(props)}
+      </div>);
+}
 export default LogInSideBar;

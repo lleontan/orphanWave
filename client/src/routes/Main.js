@@ -9,15 +9,11 @@ class Main extends Component {
   }
   render() {
     return(<div className="main alternateBackground">
-      <LogInSideBar opened={this.props.logInSideBarOpen} logInSideBarStateLogIn={this.props.logInSideBarStateLogIn} closeSidebarFunction={this.props.closeSidebarFunction}/>
+      <LogInSideBar opened={this.props.logInSideBarOpen} logInSideBarStateLogIn={this.props.logInSideBarStateLogIn}
+       closeSidebarFunction={this.props.closeSidebarFunction} loginSubmit={this.props.loginSubmit} registrationSubmit={this.props.registrationSubmit}/>
       <div className="mediumPadding">
         <div className="App">
-          <header className="App-header">
-            <p>API TEST</p>
-            <span>{this.props.apiResponse}</span>
-            <p>:::</p>
 
-          </header>
 
           <Switch>
             <Route path="/">

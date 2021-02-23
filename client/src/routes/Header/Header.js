@@ -13,7 +13,7 @@ class Header extends Component {
         return <h2>Welcome!</h2>
       }
     }else{
-      return <div className="headerLogInButtons"><LogInButton toggleFunction={props.logInFunction} name="Log In"/><span><LogInButton toggleFunction={props.registerFunction} name="Register"/></span></div>
+      return <div className="headerLogInButtons flexRow"><LogInButton toggleFunction={props.logInFunction} name="Log In"/><LogInButton toggleFunction={props.registerFunction} name="Register"/></div>
     }
   }
   render() {
