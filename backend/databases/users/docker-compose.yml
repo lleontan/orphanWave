@@ -1,0 +1,23 @@
+version: '1.0'
+services:
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'user_db'
+      MYSQL_USER: '${user}'
+      MYSQL_PASSWORD: '${password}'
+      MYSQL_ROOT_PASSWORD: '${root_password}'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      #3306
+      - '${port_exposed}:${port_exposed}'
+    expose:
+      # Opens port 3306 on the container
+      - '${port_exposed}'
+      # Where our data will be persisted
+    volumes:
+      - my-db:/var/lib/mysql
+# Names our volume
+volumes:
+  user_db:

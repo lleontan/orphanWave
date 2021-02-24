@@ -47,8 +47,8 @@ app.get('/',  async (req, res) => {
   res.send("404 page not found");
 });
 
-app.use('/login',loginRouter);
-app.use('/register',registerRouter);
+app.post('/login',loginRouter);
+app.post('/register',registerRouter);
 app.get('/user', tokenCheck, async (req, res) => {
   console.log("User get request initiated");
   res.send("Attempting get on user");
