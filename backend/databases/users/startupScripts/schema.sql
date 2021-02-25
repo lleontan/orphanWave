@@ -1,4 +1,4 @@
---This database is for non-time series data.
+-- This database is for non-time series data.
 create database if not EXISTS user_db;
 use user_db;
 create table if not exists users (

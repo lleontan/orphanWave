@@ -1,4 +1,4 @@
-version: '1.0'
+version: '3.7'
 services:
   db:
     image: mysql
@@ -15,9 +15,14 @@ services:
     expose:
       # Opens port 3306 on the container
       - '${port_exposed}'
-      # Where our data will be persisted
+    # running the startup sql script. This path is within the container.
     volumes:
-      - my-db:/var/lib/mysql
+      #from hostmachine directory:to container directory
+      - user_db:/var/lib/mysql
+      #mounting this machines startup scripts. Will execute in alphabetical order.
+      - ./startupScripts:/docker-entrypoint-initdb.d
+      - ./mountInContainer:/helper
+
 # Names our volume
 volumes:
   user_db:

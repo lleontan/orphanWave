@@ -1,1 +1,2 @@
-docker-compose run --name some-mysql -e user=lleontan password=${user_db_password} root_password=${user_db_password} port_exposed=3306;
+docker-compose up -d;
+docker ps;
