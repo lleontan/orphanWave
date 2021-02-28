@@ -1,6 +1,6 @@
 //This file handles read/writes from the mysql user database.
 //Documentation available at https://github.com/mysqljs/mysql
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var constants = require('../../constants');
 
 
@@ -8,23 +8,15 @@ var constants = require('../../constants');
 
 class UserDatabase {
   constructor() {
-    this.query = (queryString, valuesArray, callback) => {
-      //Private query
-      //An arguments example:
-      //connection.query('SELECT * FROM `books` WHERE `author` = ?', ['David'], function (error, results, fields)
-      if (this.connection) {
-        this.connection.query(queryString, valuesArray, callback);
-      } else {
-        throw new Error(constants.USER_DATABASE.NO_CLIENT_CONNECTION);
-      }
-    }
+    this.connect();
   }
   connect() {
     this.connection = mysql.createConnection({
-      host: 'localhost',
-      user: 'userDatabaseDriver',
-      port: constants.USER_DATABASE.DEFAULT_USER_DB_PORT,
-      password: process.env.USER_DATABASE_PASSWORD
+      host: '127.0.0.1',
+      user: 'root',
+      database:'user_db',
+      port: "4033",
+      password: process.env.USER_DB_PASSWORD_OW
     });
     this.connection.connect(function(err) {
       if (err) {
@@ -44,9 +36,16 @@ class UserDatabase {
     });
     return false;
   }
+  getUser(email) {
+    this.query("Select * from users where `email` = ? limit 1", [email], (error, results, fields) => {
+      if (error) throw error;
+      return getFirstInQuery(results);
+    });
+    return false;
+  }
   getUsernameExists(username) {
     //Returns true if the username is not taken already
-    this.query("Select user_name from users where `email` = ?", [email], (error, results, fields) => {
+    this.query("Select user_name from users where `user_name` = ?", [username], (error, results, fields) => {
       if (error) throw error;
       if (results.length > 0) {
         return true;
@@ -54,11 +53,17 @@ class UserDatabase {
     });
     return false;
   }
-  addUser(userData) {
-    this.query("insert into users (email, passhash, user_name) VALUES (?, ?, ?))", [userdata.email, userdata.passhash, userdata.username], (error, results, fields) => {
+  getPasswordHash(email){
+    this.query("Select passhash from users where `email` = ? limit 1", [email], (error, results, fields) => {
       if (error) throw error;
-
+      return getFirstInQuery(results);
     });
+    return false;
+  }
+  //uses a callback
+  addUser(userData, callback) {
+    this.query("insert into users (email, passhash, user_name) VALUES (?, ?, ?))", [userdata.email, userdata.passhash, userdata.username],callback);
+
   }
   changePasshash(newPasshash) {
     this.query("UPDATE customers SET passhash = ?", [newPasshash], (error, results, fields) => {
@@ -71,6 +76,16 @@ class UserDatabase {
       if (error) throw error;
 
     });
+  }
+  getFirstInQuery(queryResults){
+    return queryResults[0];
+  }
+  getBasicUserData(email){
+    this.query("Select username, email from users where `email` = ? limit 1", [email], (error, results, fields) => {
+      if (error) throw error;
+      return getFirstInQuery(results);
+    });
+    return false;
   }
   endConnection() {
     this.connection.end(function(err) {
@@ -85,4 +100,9 @@ class UserDatabase {
     connect();*/
   }
 }
-module.export = UserDatabase;
+
+let userDb = () => {
+  return new UserDatabase();
+}
+module.exports.getInstance = userDb;
+module.exports.UserDatabaseClass = UserDatabase;

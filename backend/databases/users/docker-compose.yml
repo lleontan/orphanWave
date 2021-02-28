@@ -2,6 +2,7 @@ version: '3.7'
 services:
   db:
     image: mysql
+    command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_DATABASE: 'user_db'
@@ -11,7 +12,7 @@ services:
     ports:
       # <Port exposed> : < MySQL Port running inside container>
       #3306
-      - '${port_exposed}:${port_exposed}'
+      - '127.0.0.1:4033:${port_exposed}'
     expose:
       # Opens port 3306 on the container
       - '${port_exposed}'

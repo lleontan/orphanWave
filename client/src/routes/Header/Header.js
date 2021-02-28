@@ -8,9 +8,9 @@ class Header extends Component {
   renderLoggedInOptions(props){
     if(props.loggedIn===true){
       if (props.username) {
-        return <h2>props.username</h2>
+        return <div><h2>props.username</h2><button onClick={this.props.logoutFunction}>Log Out</button></div>
       } else {
-        return <h2>Welcome!</h2>
+        return <div><h2>Welcome!</h2><button onClick={this.props.logoutFunction}>Log Out</button></div>
       }
     }else{
       return <div className="headerLogInButtons flexRow"><LogInButton toggleFunction={props.logInFunction} name="Log In"/><LogInButton toggleFunction={props.registerFunction} name="Register"/></div>
