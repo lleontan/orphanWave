@@ -23,21 +23,31 @@ router.post("/", (req, res) => {
   userDb.getUserEmailExists(body.email, (emailExists) => {
     if (emailExists) {
       console.log("Duplicate email add attempted", body.email);
-      res.status(409).send();
+      res.status(409).send({
+        message:"Duplicate email add attempted"
+      });
       return;
       console.log("Sanity check");
     } else {
       if (!emailRegex.test(body.email)) {
-        return res.status(400).send('Invalid email');
+        return res.status(400).send({
+          message:"Invalid Email"
+        });
       }
       if (!body.password) {
-        return res.status(400).send('No Password');
+        return res.status(400).send({
+          message:"No password"
+        });
       }
       if (!validPasswordRegex.test(body.password)) {
-        return res.status(403).send('Invalid password');
+        return res.status(403).send({
+          message:"Invalid password"
+        });
       }
       if (body.password != body.confirmPassword) {
-        return res.status(423).send('Password and confirmation not matching');
+        return res.status(423).send({
+          message:"Password and confirmation not matching"
+        });
       }
       if (body.username && body.username.length > constants.USER_DATABASE.MIN_USERNAME_LENGTH && !slurContains(body.username)) {
         userDb.getUsernameExists(body.username, (usernameExists)=> {
@@ -53,24 +63,33 @@ router.post("/", (req, res) => {
 
                 if (error) {
                   console.log(error);
-                  return res.status(500).send('Internal Server Error');
+                  return res.status(500).send({
+                    message:"Internal server error"
+                  });
                 }
                 console.log("New user should be added:", results);
                 //console.log(req.session)
                 req.session.sessionId=body.email;
+                req.session.save(() => {
+                  console.log(req.session);
+                  return res.status(200).send({
+                    message: "User creation success " + body.email
+                  });
+                });
                 //console.log(req.session)
 
-                return res.status(200).send({
-                  message: "User creation success " + body.email
-                });
               });
             })
           }else{
-            return res.status(422).send('Duplicate Username');
+            return res.status(422).send({
+              message:"Duplicate username"
+            });
           }
         });
       } else {
-        return res.status(400).send('Invalid username');
+        return res.status(400).send({
+          message:"Invalid username"
+        });
       }
 
     }
