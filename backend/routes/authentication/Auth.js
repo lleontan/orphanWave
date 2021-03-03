@@ -1,27 +1,29 @@
 const bcrypt=require("bcrypt");
-const UserDb=require("../../databases/users/UserDatabase");
-const userDb=UserDb.getInstance();
+
+const UserDatabase=require("../../databases/users/userDatabase");
+
 const saltRounds = 10;          //Do not alter this variable ever!!!
 
 class Auth {
   constructor(){
-
+    this.userDb=UserDatabase.defaultInstance;
   }
-  newPassHash(email,password){
+  newPassHash(email,password,callback){
     bcrypt.hash(password, saltRounds, function(err, hash) {
         if(err){
           throw err;
         }
-        return hash;
+        callback(hash);
     });
   }
-  checkMatch(email,password){
-    let dbHash=userDb.getPasswordHash(email);
-    bcrypt.compare(password, dbHash, function(err, result) {
-      if(err){
-        throw err;
-      }
-      return result;
+  checkMatch(email,password,callback){
+    this.userDb.getPasswordHash(email,(passwordHash)=>{
+      bcrypt.compare(password, passwordHash, function(err, result) {
+        if(err){
+          throw err;
+        }
+        callback(result);
+      });
     });
   }
 }

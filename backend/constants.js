@@ -10,6 +10,7 @@ module.exports = {
       GET_IEX_STATUS:"/status"
     },
     USER_DATABASE:{
+      MIN_USERNAME_LENGTH:1,
       DEFAULT_USER_DB_PORT:3030,
       NO_CLIENT_CONNECTION:"User database client has no connection"
     },

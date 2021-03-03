@@ -15,6 +15,7 @@ class App extends Component {
 
   //Gets the email and username if the user is currently loggedIn. As json
   getUser() {
+    console.log("Attempting login user check");
     this.state.backend.call("userdata", {
       method: 'GET',
       headers: {
@@ -22,12 +23,19 @@ class App extends Component {
       }
     }).then((results) => {
       console.log("User:", results);
-      this.state.user = results;
-      this.state.loggedIn = true;
-
+      if(results.status==200){
+        this.setState({
+          user:results.body,
+          loggedIn:true
+        });
+      }else{
+        this.setState({
+          user:null,
+          loggedIn:false
+        });
+      }
     }).catch((error) => {
-      console.log("", error);
-      this.state.loggedIn = false;
+      console.log("Error in userdata check", error);
     });
   }
   logout() {
@@ -37,8 +45,11 @@ class App extends Component {
         'Content-Type': 'application/json'
       }
     }).then((results) => {
-      console.log("Logged out:", results);
-      this.state.loggedIn = false;
+      console.log("Log out:", results);
+      this.setState({
+        user:results.body,
+        loggedIn:false
+      });
     }).catch((error) => {
       console.log("Not logged out:", error);
     });
@@ -51,12 +62,22 @@ class App extends Component {
         'Content-Type': 'application/json'
       }
     }).then((results) => {
-      console.log("session okay:", results);
-      this.state.loggedIn = true;
+      console.log("session return:", results);
+      if(results.stats==200){
+        this.setState({
+          loggedIn:true
+        });
+      }else{
+        this.setState({
+          loggedIn:false
+        });
+      }
     }).catch((error) => {
       console.log("Not logged in:", error);
-      this.state.loggedIn = false;
-    });
+      this.setState({
+        loggedIn:false
+      });
+        });
   }
   loginSubmit(payload) {
     //Pass this down to the sidebar
@@ -68,8 +89,10 @@ class App extends Component {
       },
       body: JSON.stringify({email: payload.email, password: payload.password})
     }).then((results) => {
-      console.log("login returned okay", results);
-      this.getUser();
+      console.log("login returned:", results);
+      if(results.status==200){
+        this.getUser();
+      }
     }).catch((error) => {
       console.log("Not logged in:", error);
     });
@@ -89,11 +112,24 @@ class App extends Component {
       },
       body: jsonPayload
     })
-    .then((results) => {
-      console.log("reg returned okay", JSON.parse(results));
-      this.getUser();
+    .then((response) => {
+      console.log("Reponse", response);
+      if(response.status==200){
+        this.setState({logInSideBarOpen:false});
+        this.getUser();
+      }else if(response.status==409){
+        this.setState({sidebarErrorText:"Email already registered"});
+      }else if(response.status==422){
+        this.setState({sidebarErrorText:"Username already registered"});
+      }else if(response.status==423){
+        this.setState({sidebarErrorText:"Passwords don't match"});
+      }else if(response.status==500){
+        this.setState({sidebarErrorText:"Internal Error"});
+      }else{
+        this.setState({sidebarErrorText:"Error, try again"});
+      }
     }).catch((error) => {
-      console.log("Not registered in:", error);
+      console.log(error);
     });
   }
 
@@ -105,7 +141,8 @@ class App extends Component {
       username: "",
       logInSideBarOpen: false,
       logInSideBarStateLogIn: true,
-      loggedIn: false
+      loggedIn: false,
+      sidebarErrorText:""
     };
 
   }
@@ -139,6 +176,7 @@ class App extends Component {
             }}/>
         </div>
         <Main
+        sidebarErrorText={this.state.sidebarErrorText}
           logInSideBarOpen={this.state.logInSideBarOpen && !this.state.loggedIn}
           logInSideBarStateLogIn={this.state.logInSideBarStateLogIn}
           closeSidebarFunction={() => {

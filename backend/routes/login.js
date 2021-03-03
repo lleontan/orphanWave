@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
     if(!(body&&body.email&&body.password)){
       return res.status(400).send('Invalid body');
     }
-    auth.checkPasswordMatch(body.email,body.password).then((results,error)=>{
+    auth.checkMatch(body.email,body.password,(results,error)=>{
       if(error){
         return res.status(400).send("Password don't match")
       }else{
@@ -19,10 +19,7 @@ router.post('/', (req, res) => {
         return res.status(200).send({message:"New session initiated"});
       }
     })
-
-    let token = 'Done'
-
-    return res.status(200).send(token);
 })
+
 
 module.exports = router;

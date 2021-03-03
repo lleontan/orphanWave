@@ -52,10 +52,14 @@ const RenderSidebar=(props)=>{
     <InputBlock name="password"/>
     <InputBlock name="confirmPassword"/>
     <InputBlock name="username" type="text"/>
+
     <input type="submit" value="Submit" onClick={(event) => {
         event.preventDefault();
         props.registrationSubmit(compileFormRegistration())
       }}/>
+      <div className={`${ "slightMarginTop"} ${ "centeredText"}`}>
+        <label>{props.sidebarErrorText}</label>
+      </div>
   </form>);
 }
 

@@ -17,7 +17,16 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 let redis=require("redis");
 let RedisStore = require('connect-redis')(session)
-let redisClient = redis.createClient()
+let redisClient = redis.createClient({
+    host: '127.0.0.1',
+    port: '6379'
+  });
+  redisClient.on('error', err => {
+      console.log('Redis Error ' + err);
+  });
+  redisClient.on('connect', function (err) {
+    console.log('Connected to redis successfully');
+});
 
 const UnemploymentRateString = constants.BASE_IEX_URL + constants.IEX.UNEMPLOYMENT_RATE_ROUTE;
 const GENERIC_ERROR_MESSAGE = "Error Occured";
@@ -37,23 +46,42 @@ function normalizePort(val) {
 
   return false;
 }
+redisClient.on('error', console.error)
 
 let port = normalizePort(process.env.LOCAL_PORT || '9000');
-if (app.get('env') === 'production') {
-  app.set('trust proxy', 1) // trust first proxy
-  sess.cookie.secure = true // serve secure cookies
+if(!process.env.sessionSecret){
+  throw new Error("sessionSecret env variable not set!!!");
 }
-let sessionHandler = session({
+if(!process.env.orphanWaveBuildEnvironment){
+  throw new Error("orphanWaveBuildEnvironment env variable not set!!!");
+}
+let sessionOptions={
   secret: process.env.sessionSecret,
   resave: false,
   expires: new Date(Date.now() + (30 * 86400 * 1000)),
   store: new RedisStore({client: redisClient}),
+  cookie:{
+    secure:false,      //If true then only https will be allowed.
+    httpOnly: false, // if true prevent client side JS from reading the cookie
+    maxAge: 1000 * 60 * 10 // session max age in miliseconds
+  },
   saveUninitialized: false
-});
+};
+if (process.env.orphanWaveBuildEnvironment === 'production') {
+  console.log("Production environment specified");
+  app.set('trust proxy', 1) // trust first proxy
+  sessionOptions.cookie.secure = true // serve secure cookies
+}
+let sessionHandler = session(sessionOptions);
 
 app.use(cookieParser(process.env.sessionSecret));
 app.use(sessionHandler);
-
+app.use(function (req, res, next) {
+  if (!req.session) {
+    return next(new Error('Redis sessions unavailble')) // handle error
+  }
+  next() // otherwise continue
+})
 app.use(cors());
 app.use(express.json())
 app.set('port', port);
