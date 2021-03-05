@@ -1,17 +1,16 @@
-import React, {Component,useRef} from 'react';
+import React, {Component, useRef} from 'react';
 import LogInButton from './LogInButton';
 import InputBlock from './InputBlock';
 import CloseButton from './CloseButton';
 
-
-const RenderSidebar=(props)=>{
+const RenderSidebar = (props) => {
   let formRef = useRef(null);
   let compileFormLogin = () => {
     let form = formRef.current;
     let confirmPasswordInput = form['confirmPassword'];
-    let confirmPassword="";
-    if(confirmPasswordInput){
-      confirmPassword=confirmPasswordInput.value;
+    let confirmPassword = "";
+    if (confirmPasswordInput) {
+      confirmPassword = confirmPasswordInput.value;
     }
     let payload = {
       email: form['email'].value,
@@ -30,48 +29,64 @@ const RenderSidebar=(props)=>{
     return payload;
   }
   if (props.logInSideBarStateLogIn) {
-    return (<form ref={formRef}>
+    return (
+      <form ref={formRef}>
+        <div className="flexRow spaceBetween">
+          <h2>Log In</h2>
+          <CloseButton clickFunction={props.closeSidebarFunction}/>
+        </div>
+        <InputBlock name="email"/>
+        <InputBlock name="password"/>
+        <input
+          type="submit"
+          value="Submit"
+          onClick={(event) => {
+            event.preventDefault();
+            props.loginSubmit(compileFormLogin())
+          }}/>
+        <div className={`${ "slightMarginTop"} ${ "centeredText"}`}>
+          <label>{props.sidebarLoginErrorText}</label>
+        </div>
+      </form>
+    );
+  }
+  return (
+    <form ref={formRef}>
       <div className="flexRow spaceBetween">
-        <h2>Log In</h2>
+        <h2>Register</h2>
         <CloseButton clickFunction={props.closeSidebarFunction}/>
       </div>
       <InputBlock name="email"/>
       <InputBlock name="password"/>
-      <input type="submit" value="Submit" onClick={(event) => {
-          event.preventDefault();
-          props.loginSubmit(compileFormLogin())
-        }}/>
-    </form>);
-  }
-  return (<form ref={formRef}>
-    <div className="flexRow spaceBetween">
-      <h2>Register</h2>
-      <CloseButton clickFunction={props.closeSidebarFunction}/>
-    </div>
-    <InputBlock name="email"/>
-    <InputBlock name="password"/>
-    <InputBlock name="confirmPassword"/>
-    <InputBlock name="username" type="text"/>
+      <InputBlock name="confirmPassword"/>
+      <InputBlock name="username" type="text"/>
 
-    <input type="submit" value="Submit" onClick={(event) => {
-        event.preventDefault();
-        props.registrationSubmit(compileFormRegistration())
-      }}/>
+      <input
+        type="submit"
+        value="Submit"
+        onClick={(event) => {
+          event.preventDefault();
+          props.registrationSubmit(compileFormRegistration())
+        }}/>
       <div className={`${ "slightMarginTop"} ${ "centeredText"}`}>
         <label>{props.sidebarErrorText}</label>
       </div>
-  </form>);
+    </form>
+  );
 }
 
-let handleSubmit=(event)=>{
+let handleSubmit = (event) => {
   event.preventDefault();
 }
 
-let LogInSideBar=(props)=>{
-  return(<div className={`${ "logInSideBar"} ${ "baseBackground"} ${props.opened
-          ? "visible"
-          : "hidden"}`}>
-        {RenderSidebar(props)}
-      </div>);
+let LogInSideBar = (props) => {
+  return (
+    <div
+      className={`${ "logInSideBar"} ${ "baseBackground"} ${props.opened
+        ? "visible"
+        : "hidden"}`}>
+      {RenderSidebar(props)}
+    </div>
+  );
 }
 export default LogInSideBar;

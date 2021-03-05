@@ -5,7 +5,7 @@
 */
 
 const Auth = require('./authentication/Auth');
-const auth = Auth.getAuth();
+const auth = new Auth();
 const UserDatabase = require("../databases/users/userDatabase");
 const router = require('express').Router();
 const slurContains = require("./../helpers/slurContains");
@@ -14,7 +14,7 @@ const constants = require("../constants");
 router.post("/", (req, res) => {
   let body = req.body;
   let emailRegex = /^[a-zA-Z0-9_\-]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+$/;
-  let validPasswordRegex = /^.{1,}$/;
+  let validPasswordRegex = /^.{1,200}$/;
   let userDb = UserDatabase.defaultInstance;
 
   if (!body.email) {
@@ -69,12 +69,16 @@ router.post("/", (req, res) => {
                 }
                 console.log("New user should be added:", results);
                 //console.log(req.session)
-                req.session.sessionId=body.email;
-                req.session.save(() => {
+                req.session.email=body.email;
+                req.session.save((err) => {
+                  if(err){
+                    console.log(err);
+                  }
                   console.log(req.session);
-                  return res.status(200).send({
+                  res.status(200).send({
                     message: "User creation success " + body.email
                   });
+                  res.end();
                 });
                 //console.log(req.session)
 

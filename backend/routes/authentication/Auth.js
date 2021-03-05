@@ -17,17 +17,17 @@ class Auth {
     });
   }
   checkMatch(email,password,callback){
+    console.log("attempting hash start");
     this.userDb.getPasswordHash(email,(passwordHash)=>{
+      console.log("attempting hash");
       bcrypt.compare(password, passwordHash, function(err, result) {
-        if(err){
+        /*if(err){
           throw err;
-        }
-        callback(result);
+        }*/
+        console.log("Comparison");
+        callback(result,err);
       });
     });
   }
 }
-let getAuth=()=>{
-  return new Auth();
-};
-module.exports.getAuth = getAuth;
+module.exports=Auth;

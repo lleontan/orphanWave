@@ -11,6 +11,7 @@ class Main extends Component {
     return(<div className="main alternateBackground">
       <LogInSideBar sidebarErrorText={this.props.sidebarErrorText}
       opened={this.props.logInSideBarOpen}
+      sidebarLoginErrorText={this.props.sidebarLoginErrorText}
       logInSideBarStateLogIn={this.props.logInSideBarStateLogIn}
        closeSidebarFunction={this.props.closeSidebarFunction}
         loginSubmit={this.props.loginSubmit}

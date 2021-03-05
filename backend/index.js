@@ -46,7 +46,6 @@ function normalizePort(val) {
 
   return false;
 }
-redisClient.on('error', console.error)
 
 let port = normalizePort(process.env.LOCAL_PORT || '9000');
 if(!process.env.sessionSecret){
@@ -55,15 +54,20 @@ if(!process.env.sessionSecret){
 if(!process.env.orphanWaveBuildEnvironment){
   throw new Error("orphanWaveBuildEnvironment env variable not set!!!");
 }
+
 let sessionOptions={
   secret: process.env.sessionSecret,
   resave: false,
-  expires: new Date(Date.now() + (30 * 86400 * 1000)),
+  name: "redisSession",
+
+  expires: new Date(Date.now() + (30 * 86400 * 100000)),
   store: new RedisStore({client: redisClient}),
   cookie:{
-    secure:false,      //If true then only https will be allowed.
+    sameSite: 'none',
+    //WARNING: for localhost testing sameSite must be none AND secure must be true
+    secure:true,      //If true then only https will be allowed.
     httpOnly: false, // if true prevent client side JS from reading the cookie
-    maxAge: 1000 * 60 * 10 // session max age in miliseconds
+    maxAge: 1000 * 60 * 100 // session max age in miliseconds
   },
   saveUninitialized: false
 };
@@ -73,18 +77,18 @@ if (process.env.orphanWaveBuildEnvironment === 'production') {
   sessionOptions.cookie.secure = true // serve secure cookies
 }
 let sessionHandler = session(sessionOptions);
+app.use(sessionHandler);
 
 app.use(cookieParser(process.env.sessionSecret));
-app.use(sessionHandler);
 app.use(function (req, res, next) {
   if (!req.session) {
     return next(new Error('Redis sessions unavailble')) // handle error
   }
   next() // otherwise continue
 })
-app.use(cors());
+  //whitelist the front end server or api requests will be blocked
+app.use(cors({credentials: true, origin: 'https://localhost:8080'}));
 app.use(express.json())
-app.set('port', port);
 app.get(constants.ROUTES.GET_IEX_STATUS, async (req, res) => {
   status(req, res, IexApi);
 });

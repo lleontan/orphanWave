@@ -1,6 +1,7 @@
 const router = require('express').Router()
+
 const Auth = require('./authentication/Auth');
-const auth = Auth.getAuth();
+const auth = new Auth();
 router.post('/', (req, res) => {
   req.session.destroy(function(err) {
     if (err) {
