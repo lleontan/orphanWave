@@ -10,6 +10,8 @@ const logoutRouter = require("./routes/logout");
 const sessionRouter = require("./routes/authentication/sessions");   //session router is used for mandatory session validation
 const checkSessionRouter = require("./routes/authentication/checkSession");   //for a manual check
 const userdataRouter = require("./routes/userdata");   //for a manual check
+const fs = require('fs');
+const https = require('https')
 
 const registerRouter = require("./routes/register");
 const cors = require("cors");
@@ -55,6 +57,7 @@ if(!process.env.orphanWaveBuildEnvironment){
   throw new Error("orphanWaveBuildEnvironment env variable not set!!!");
 }
 
+
 let sessionOptions={
   secret: process.env.sessionSecret,
   resave: false,
@@ -75,7 +78,15 @@ if (process.env.orphanWaveBuildEnvironment === 'production') {
   console.log("Production environment specified");
   app.set('trust proxy', 1) // trust first proxy
   sessionOptions.cookie.secure = true // serve secure cookies
+}else{
+  if(!process.env.localHostPemPath){
+    throw new Error("localHostPemPath env variable not set!!!");
+  }
+  if(!process.env.localHostCertKeyPath){
+    throw new Error("localHostPemPath env variable not set!!!");
+  }
 }
+
 let sessionHandler = session(sessionOptions);
 app.use(sessionHandler);
 
@@ -130,8 +141,11 @@ app.get('data', sessionRouter, async (req, res) => {
   console.log("Api data request initiated");
   res.send("Attempting get on data");
 });
-
-app.listen(constants.LOCAL_PORT, constants.HOST_NAME, () => {
+const httpsOptions = {
+  key: fs.readFileSync(process.env.localHostCertKeyPath),
+  cert: fs.readFileSync(process.env.localHostPemPath)
+}
+const server=https.createServer(httpsOptions, app).listen(constants.LOCAL_PORT, constants.HOST_NAME, () => {
   console.log('Orphan Wave listening on port ' + constants.LOCAL_PORT);
-  console.log("http://" + constants.HOST_NAME + ':' + constants.LOCAL_PORT + '/');
+  console.log("https://" + constants.HOST_NAME + ':' + constants.LOCAL_PORT + '/');
 });

@@ -2,7 +2,7 @@ class Backend {
   constructor() {
     this.state = {
       LOCAL_PORT: 8000,
-      HOST_NAME: "http://127.0.0.1:"
+      HOST_NAME: "https://127.0.0.1:"
     }
   }
   callAPIText(requestStr, options,callback) {
