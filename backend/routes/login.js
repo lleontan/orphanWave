@@ -14,6 +14,7 @@ router.post('/', (req, res) => {
     if (err) {
       throw err;
     }
+    console.log("Login session check:",req.session);
     return res.status(200).send({message: "New session initiated"});
   });
 })

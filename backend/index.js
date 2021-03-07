@@ -126,9 +126,10 @@ app.get('/test/unemployment', async (req, res) => {
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/checkSession', checkSessionRouter);
-app.use('/userdata', userdataRouter);
 
 app.use('/register', registerRouter);
+app.use('/userdata',sessionRouter, userdataRouter);
+
 app.get('user', sessionRouter, async (req, res) => {
   console.log("User get request initiated");
   res.send("Attempting get on user");

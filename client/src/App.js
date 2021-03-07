@@ -28,11 +28,10 @@ class App extends Component {
       console.log("User:", res);
       res.json().then((body) => {
         if (res.status == 200) {
-          console.log("body:",body);
-          this.setState({user: body.user,
-            username:body.user.user_name,
-             loggedIn: true});
+          console.log("body:", body);
+          this.setState({user: body.user, username: body.user.user_name, loggedIn: true});
         } else {
+          console.log("Login failed");
           this.setState({user: null, loggedIn: false});
         }
       });
@@ -43,12 +42,15 @@ class App extends Component {
   logout() {
     this.state.backend.call("logout", {
       method: 'POST',
+      crossDomain: true,
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
       }
     }).then((results) => {
       console.log("Log out:", results);
-      this.setState({user: results.body, loggedIn: false});
+      this.setState({user: results.body, username: "", loggedIn: false});
     }).catch((error) => {
       console.log("Not logged out:", error);
     });
@@ -77,8 +79,11 @@ class App extends Component {
     console.log("login attmpted", payload);
     this.state.backend.call("login", {
       method: 'POST',
+      crossDomain: true,
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
       },
       body: JSON.stringify({email: payload.email, password: payload.password})
     }).then((res) => {
@@ -146,16 +151,18 @@ class App extends Component {
   closeSidebar() {
     this.setState({logInSideBarOpen: false});
   }
-  pingServer(resText,callback) {
+  pingServer(resText, callback) {
     this.setState({apiResponse: resText});
-    if(callback){
+    if (callback) {
       callback();
     }
   }
   componentDidMount() {
     this.state.backend.callAPIText("status", {}, (input) => {
-      this.pingServer(input,()=>{
-        this.getUser();
+      this.pingServer(input, () => {
+        //if(this.state.user){
+          this.getUser();
+        //}
       });
 
     });

@@ -20,7 +20,7 @@ class Header extends Component {
   render() {
     return (<div className="header">
       <div className="flexRow">
-        <img src="/logo192.png"></img>
+        <img src="/fish.png"></img>
         <h1>Orphan Wave</h1>
       </div>
       {this.renderLoggedInOptions(this.props)}

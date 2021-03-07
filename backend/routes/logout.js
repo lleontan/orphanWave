@@ -3,7 +3,8 @@ const router = require('express').Router()
 const Auth = require('./authentication/Auth');
 const auth = new Auth();
 router.post('/', (req, res) => {
-  req.session.destroy(function(err) {
+  console.log("Attempting logout");
+  req.session.destroy((err)=>{
     if (err) {
       console.log(err);
       return res.status(400).send("Cannot log out");

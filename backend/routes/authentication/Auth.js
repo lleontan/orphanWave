@@ -9,7 +9,6 @@ const logUserIn = (req, res, email, callback) => {
   req.session.email = email;
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Headers', "Accept");
-
   req.session.save(callback);
 }
 class Auth {
