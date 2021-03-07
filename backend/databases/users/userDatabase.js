@@ -29,115 +29,122 @@ class UserDatabasePool {
     this.pool = connectPool();
   }
 
-    getUserEmailExists(email,callback) {
-      //returns true if the user does not exist within the database, and the database is available.
-      this.pool.query(
-        "Select email from users where `email` = ?",
-        [email],
-        (error, results, fields) => {
-          if (error)
-            throw error;
-          if (results.length > 0) {
-            callback(true);
-          }else{
-            callback(false);
-          }
+  getUserEmailExists(email, callback) {
+    //returns true if the user does not exist within the database, and the database is available.
+    this.pool.query(
+      "Select email from users where `email` = ?",
+      [email],
+      (error, results, fields) => {
+        if (error)
+          throw error;
+        if (results.length > 0) {
+          callback(true);
+        } else {
+          callback(false);
         }
-      );
-    }
-    getUser(email,callback) {
-      this.pool.query(
-        "Select * from users where `email` = ? limit 1",
-        [email],
-        (error, results, fields) => {
-          if (error)
-            throw error;
-          callback(getFirstInQuery(results));
+      }
+    );
+  }
+  getUser(email, callback) {
+    this.pool.query(
+      "Select * from users where `email` = ? limit 1",
+      [email],
+      (error, results, fields) => {
+        if (error)
+          throw error;
+        callback(this.getFirstInQuery(results));
+      }
+    );
+  }
+  getUsernameExists(username, callback) {
+    //Returns true if the username is not taken already
+    this.pool.query(
+      "Select user_name from users where `user_name` = ?",
+      [username],
+      (error, results, fields) => {
+        if (error)
+          throw error;
+        if (results.length > 0) {
+          callback(true);
+        } else {
+          callback(false);
         }
-      );
-    }
-    getUsernameExists(username,callback) {
-      //Returns true if the username is not taken already
-      this.pool.query(
-        "Select user_name from users where `user_name` = ?",
-        [username],
-        (error, results, fields) => {
-          if (error)
-            throw error;
-          if (results.length > 0) {
-            callback(true);
-          }else{
-            callback(false);
-          }
+      }
+    );
+  }
+  getPasswordHash(email, callback) {
+    this.pool.query(
+      "Select passhash from users where `email` = ? limit 1",
+      [email],
+      (error, results, fields) => {
+        if (error) {
+          console.log("password comparison err:",error);
+          callback(error,null);
         }
-      );
-    }
-    getPasswordHash(email,callback) {
-      this.pool.query(
-        "Select passhash from users where `email` = ? limit 1",
-        [email],
-        (error, results, fields) => {
-          if (error){
-            throw error;
-          callback(getFirstInQuery(results));
+        else {callback(error,this.getFirstInQuery(results));}
+      }
+    );
+  }
+  //uses a callback
+  addUser(userData, callback) {
+    this.pool.query("insert into users (email, passhash, user_name) VALUES (?, ?, ?)", [
+      userData.email, userData.passhash, userData.username
+    ], callback);
+  }
+  changePasshash(newPasshash, callback) {
+    this.pool.query(
+      "UPDATE customers SET passhash = ?",
+      [newPasshash],
+      (error, results, fields) => {
+        if (error) {
+          throw error;
         }
-      });
-    }
-    //uses a callback
-    addUser(userData, callback) {
-      this.pool.query("insert into users (email, passhash, user_name) VALUES (?, ?, ?)", [
-        userData.email, userData.passhash, userData.username
-      ], callback);
-    }
-    changePasshash(newPasshash,callback) {
-      this.pool.query(
-        "UPDATE customers SET passhash = ?",
-        [newPasshash],
-        (error, results, fields) => {
-          if (error){
-            throw error;
-          }
-          callback(results,fields);
-        });
-    }
-    changeUsername(newUsername,callback) {
-      this.pool.query(
-        "UPDATE customers SET user_name = ?",
-        [newUsername],
-        (error, results, fields) => {
-          if (error){
-            throw error;
-          }
-          callback(results,fields);
-        });
-    }
-    getFirstInQuery(queryResults) {
-      return queryResults[0];
-    }
-    getBasicUserData(email,callback) {
-      this.pool.query(
-        "Select username, email from users where `email` = ? limit 1",
-        [email],
-        (error, results, fields) => {
-          if (error){
-            throw error;
-          callback(getFirstInQuery(results));
+        callback(results, fields);
+      }
+    );
+  }
+  changeUsername(newUsername, callback) {
+    this.pool.query(
+      "UPDATE customers SET user_name = ?",
+      [newUsername],
+      (error, results, fields) => {
+        if (error) {
+          throw error;
         }
-      });
-    }
+        callback(results, fields);
+      }
+    );
+  }
+  getFirstInQuery(queryResults) {
+    return queryResults[0];
+  }
+  getBasicUserData(email, callback) {
+    this.pool.query(
+      "Select user_name, email from users where `email` = ? limit 1",
+      [email],
+      (error, results, fields) => {
+        if (error) {
+          throw error;
+        }
+        console.log(results);
+        callback(error, this.getFirstInQuery(results), fields);
 
-    handleDisconnect() {
-      /*let sleepDuration = 1000;
+      }
+    );
+  }
+
+  handleDisconnect() {
+    /*let sleepDuration = 1000;
       console.log("Attempting user db reconnect", sleepDuration);
       await sleep(sleepDuration);
       connect();*/
-    }
+  }
 }
 
 let makePool = () => {
   return new UserDatabasePool();
 }
-let defaultInstance=makePool();
+let defaultInstance = makePool();
 module.exports.makePool = makePool;
 module.exports.UserDatabasePool = UserDatabasePool;
 module.exports.defaultInstance = defaultInstance;

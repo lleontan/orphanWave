@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {BrowserRouter as Router, Switch, Route, Link} from "react-router-dom";
 import LogInButton from '../../components/LogInButton';
+import Constants from '../../Constants'
 class Header extends Component {
   constructor(props){
     super(props);
@@ -8,7 +9,7 @@ class Header extends Component {
   renderLoggedInOptions(props){
     if(props.loggedIn===true){
       if (props.username) {
-        return <div><h2>props.username</h2><button onClick={this.props.logoutFunction}>Log Out</button></div>
+        return <div><h2>{Constants.HEADER_USERNAME_PREFIX+props.username}</h2><button onClick={this.props.logoutFunction}>Log Out</button></div>
       } else {
         return <div><h2>Welcome!</h2><button onClick={this.props.logoutFunction}>Log Out</button></div>
       }

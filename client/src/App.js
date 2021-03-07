@@ -18,17 +18,24 @@ class App extends Component {
     console.log("Attempting login user check");
     this.state.backend.call("userdata", {
       method: 'GET',
+      crossDomain: true,
       credentials: "include",
       headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'      }
-    }).then((results) => {
-      console.log("User:", results);
-      if (results.status == 200) {
-        this.setState({user: results.body, loggedIn: true});
-      } else {
-        this.setState({user: null, loggedIn: false});
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
       }
+    }).then((res) => {
+      console.log("User:", res);
+      res.json().then((body) => {
+        if (res.status == 200) {
+          console.log("body:",body);
+          this.setState({user: body.user,
+            username:body.user.user_name,
+             loggedIn: true});
+        } else {
+          this.setState({user: null, loggedIn: false});
+        }
+      });
     }).catch((error) => {
       console.log("Error in userdata check", error);
     });
@@ -76,10 +83,10 @@ class App extends Component {
       body: JSON.stringify({email: payload.email, password: payload.password})
     }).then((res) => {
       console.log("login returned:", res);
-      res.json().then((body)=>{
+      res.json().then((body) => {
         if (res.ok) {
           this.getUser();
-        }else{
+        } else {
           console.log("Login Error");
           this.setState({sidebarLoginErrorText: body.message});
         }
@@ -103,14 +110,11 @@ class App extends Component {
         Accept: 'application/json'
       },
       body: jsonPayload
-    })
-    .then(res=>{
-      res.json().then((body)=>{
+    }).then(res => {
+      res.json().then((body) => {
         console.log(res);
         if (res.ok) {
-          this.setState({
-            logInSideBarOpen: false,
-          });
+          this.setState({logInSideBarOpen: false});
           this.getUser();
         } else {
           this.setState({sidebarErrorText: body.message});
@@ -118,7 +122,9 @@ class App extends Component {
       });
     }).catch((error) => {
       console.log(error)
-      this.setState({sidebarErrorText: error+""});
+      this.setState({
+        sidebarErrorText: error + ""
+      });
     });
   }
 
@@ -132,7 +138,7 @@ class App extends Component {
       logInSideBarStateLogIn: true,
       loggedIn: false,
       sidebarErrorText: "",
-      sidebarLoginErrorText:""
+      sidebarLoginErrorText: ""
     };
 
   }
@@ -140,12 +146,18 @@ class App extends Component {
   closeSidebar() {
     this.setState({logInSideBarOpen: false});
   }
-  pingServer(resText) {
+  pingServer(resText,callback) {
     this.setState({apiResponse: resText});
+    if(callback){
+      callback();
+    }
   }
   componentDidMount() {
     this.state.backend.callAPIText("status", {}, (input) => {
-      this.pingServer(input)
+      this.pingServer(input,()=>{
+        this.getUser();
+      });
+
     });
   }
   render() {

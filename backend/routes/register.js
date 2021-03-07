@@ -22,8 +22,7 @@ router.post("/", (req, res) => {
   }
   userDb.getUserEmailExists(body.email, (emailExists) => {
     if (emailExists) {
-      console.log("Duplicate email add attempted", body.email);
-      res.status(409).send({
+      res.status(400).send({
         message:"Duplicate email add attempted"
       });
       return;
@@ -68,9 +67,7 @@ router.post("/", (req, res) => {
                   });
                 }
                 console.log("New user should be added:", results);
-                //console.log(req.session)
-                req.session.email=body.email;
-                req.session.save((err) => {
+                auth.logUserInFull(req,res,body.email,body.password,(err) => {
                   if(err){
                     console.log(err);
                   }
@@ -80,18 +77,17 @@ router.post("/", (req, res) => {
                   });
                   res.end();
                 });
-                //console.log(req.session)
 
               });
             })
           }else{
-            return res.status(422).send({
+            return res.status(409).send({
               message:"Duplicate username"
             });
           }
         });
       } else {
-        return res.status(400).send({
+        return res.status(422).send({
           message:"Invalid username"
         });
       }
