@@ -3,7 +3,7 @@ let constants = require('../constants');
 
 /* This class handles fetch calls to and from external APIs.
  */
-class ApiFetch {
+class ApiFetchIEX {
 
   constructor(baseUrl, authToken) {
     console.log(process.env.iexKey);
@@ -66,14 +66,21 @@ class ApiFetch {
         return fetchResponse.json();
       })
       .then(body => {
-        console.log("Iex json returned:" + body);
+        console.log("Json returned:" + body);
         return body;
       });
+  }
+  getKeyStats(symbol, callback){
+    let endpointStr="/stock/"+symbol+"/stats/"
+    fetchIexJson(endpointStr,true).then((jsonObj)=>{
+      callback(jsonObj);
+    });
   }
 }
 
 let iexApi = () => {
-  return new ApiFetch(constants.BASE_IEX_URL, process.env.iexKey);
+  return new ApiFetchIEX(constants.BASE_IEX_URL, process.env.iexKey);
 }
+
 module.exports.IexApi = iexApi;
-module.exports.ApiFetch = ApiFetch;
+module.exports.ApiFetchIEX = ApiFetchIEX;

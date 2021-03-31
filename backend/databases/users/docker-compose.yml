@@ -25,5 +25,7 @@ services:
       - ./mountInContainer:/helper
 
 # Names our volume
+#Docker will create the volume for you in the /var/lib/docker/volumes folder.
+#This volume persist as long as you are not typing docker-compose down -v
 volumes:
   user_db:
